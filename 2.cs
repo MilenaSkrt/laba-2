@@ -4,15 +4,17 @@ namespace lab2
 {
     public abstract class BaseList
     {
+        
         //абстрактные методы, которое реализованы в классах-наследниках
-        public virtual int Count{ get; }
+        protected int Count;
+        public int Count{ get {return Count;} }
         public abstract void Add(int a);
         public abstract void Insert(int a, int pos);
         public abstract void Delete(int pos);
         public abstract void Clear();
 
         public abstract int this[int i] { get; set; }
-        public virtual void Print()
+        public void Print()
         {
             for (int i = 0; i < Count; i++)
             {
@@ -20,10 +22,17 @@ namespace lab2
             }
             Console.WriteLine();
         }
-        public abstract void AssignTo(BaseList dest); //из объекта в то что надо
+        public void AssignTo(BaseList dest){
+            dest.Assign(this);
+        }//из объекта в то что надо
         //абстрактный метод для копирования элементов списка 
         protected abstract BaseList EmptyClone(); //создает пустышки для Clone()
-        public abstract BaseList Clone(); 
+        public BaseList Clone()
+        {
+            Base_list clone_list = EmptyClone();
+            clone_list.Assign(this);
+            return clone_list;
+        }
         //пузырьковая сортировка
         public virtual void Sort()
         {
@@ -70,7 +79,7 @@ namespace lab2
             }
             return true;
         }
-        public virtual void Assign(BaseList source)
+        public void Assign(BaseList source)
         {
             // очищаем текущий список, чтобы избежать дублирования элементов 
             Clear();
@@ -91,7 +100,7 @@ namespace lab2
     public class ArrList : BaseList
     {
         private int[] buf; // массив для хранения элементов 
-        private int count;
+        // public override int Count => count;
         // Переопределение свойства для получения количества элементов в списке
         
 
@@ -164,10 +173,7 @@ namespace lab2
         // метод очистки списка
         public override void Clear()
         {
-            for (int i = 0; i < count; i++)
-            {
-                buf[i] = 0; //зануляем все элементы
-            }
+            buf = new int[0]
             count = 0; //сбрасываем кол-во элементов
         }
         public override int Count
@@ -205,38 +211,8 @@ namespace lab2
         //     }
         //     Console.WriteLine();
         // }
-        public override void AssignTo(BaseList dest)
-        {
-            // очищаем целевой список
-            dest.Clear();
-
-            // проверка на тип целевого списка
-            if (dest is ArrList)
-            {
-                // приведение типа для доступа к методам ArrList
-                ArrList destinationList = (ArrList)dest;
-
-                // проходим по элементам текущего списка и добавляем их в целевой список
-                for (int i = 0; i < Count; i++)
-                {
-                    destinationList.Add(this[i]);
-                }
-            }
-            else
-            {
-                // в случае, если тип целевого списка не совпадает, ничего не делаем
-                Console.WriteLine("Невозможно выполнить присваивание: типы списков не совпадают.");
-            }
-        }
         // переопределение метода Clone для создания глубокой копии текущего списка 
-        public override BaseList Clone()
-        {
-            // создание нового объекта ArrList для хранения копии списка
-            ArrList clone = new ArrList();
-            clone.Assign(this); // присвоение элементов текущего списка копии с использованием метода Assign
-            return clone; // возвращение созданной копии списка
-        }
-        // переопределение метода EmptyClone для создания пустой копии текущего списка
+            // переопределение метода EmptyClone для создания пустой копии текущего списка
         protected override BaseList EmptyClone()
         {
             // создание нового объекта ArrList в качестве пустой копии списка.
@@ -282,6 +258,7 @@ namespace lab2
     {
         private class Node
         {
+            
             public int Data; //данные в узле
             public Node Next; // ссылка на след. элемент
 
@@ -293,7 +270,7 @@ namespace lab2
             }
         }
         private Node head; //голова списка 1 узел
-        private int count; //кол-во узлов в списке
+         //кол-во узлов в списке
 
         //сам цепной список
         public ChainList()
@@ -463,37 +440,9 @@ namespace lab2
         //     }
         //     Console.WriteLine();
         // }
-        public override void AssignTo(BaseList dest)
-        {
-            // Очищаем целевой список
-            dest.Clear();
-
-            // Проверка на тип целевого списка
-            if (dest is ChainList)
-            {
-                // Приведение типа для доступа к методам ChainList
-                ChainList destinationList = (ChainList)dest;
-
-                // Проходим по элементам текущего списка и добавляем их в целевой список
-                for (int i = 0; i < Count; i++)
-                {
-                    destinationList.Add(this[i]);
-                }
-            }
-            else
-            {
-                // В случае, если тип целевого списка не совпадает, ничего не делаем
-                Console.WriteLine("Невозможно выполнить присваивание: типы списков не совпадают.");
-            }
-        }
+    
 
 
-        public override BaseList Clone()
-        {
-            ChainList clone = new ChainList();
-            clone.Assign(this);
-            return clone;
-        }
         protected override BaseList EmptyClone()
         {
             return new ChainList(); //создаем пустышку как ChainList
